@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Employee - Attendance System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark m-0">👥 Add New Employee Profile</h2>
+        <p class="text-secondary small m-0 mt-1">Create a fresh worker file inside your enterprise infrastructure registry.</p>
+    </div>
+    <a href="/employees" class="btn btn-outline-secondary fw-semibold shadow-sm">
+        ⬅️ Back to List
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 bg-white p-4 mb-5" style="max-width: 650px; border-radius: 8px;">
+    <form method="POST" action="/add_employee">
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Full Name</label>
+            <input type="text" name="name" class="form-control" required autocomplete="off" placeholder="Enter employee full name">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Mobile Number</label>
+            <input 
+                type="text" 
+                name="mobile" 
+                class="form-control" 
+                required 
+                autocomplete="off"
+                inputmode="numeric"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                placeholder="Enter 10-digit mobile number"
+                title="Mobile number must contain exactly 10 digits (0-9 only)."
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+            >
+            <div class="form-text text-muted">Must be exactly 10 digits without spaces or characters.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Aadhaar Number</label>
+            <input 
+                type="text" 
+                name="aadhaar" 
+                class="form-control" 
+                required 
+                autocomplete="off"
+                inputmode="numeric"
+                pattern="[0-9]{12}"
+                maxlength="12"
+                placeholder="Enter 12-digit Aadhaar number"
+                title="Aadhaar number must contain exactly 12 digits (0-9 only)."
+                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+            >
+            <div class="form-text text-muted">Must be exactly 12 digits without spaces or hyphens.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Joining Date</label>
+            <input type="date" name="joining_date" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Monthly Salary</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light text-secondary">₹</span>
+                <input type="number" name="monthly_salary" class="form-control" step="0.01" required placeholder="0.00">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <label class="form-label fw-semibold text-secondary">Shift Start</label>
+                <input type="time" name="shift_start" class="form-control" value="09:00" required>
+            </div>
+            <div class="col-6">
+                <label class="form-label fw-semibold text-secondary">Shift End</label>
+                <input type="time" name="shift_end" class="form-control" value="18:00" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-secondary">Grace Period Allocation</label>
+            <select name="grace_minutes" class="form-select">
+                <option value="0">0 Minutes</option>
+                <option value="5">5 Minutes</option>
+                <option value="10" selected>10 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="rfid_uid" class="form-label fw-semibold text-secondary">RFID UID / Card Token</label>
+            <div class="input-group">
+                <input type="text" id="rfid_uid" name="rfid_uid" class="form-control" autocomplete="off" placeholder="Scan or Enter Card Number" required>
+                <button type="button" id="fetch-scan-btn" class="btn btn-dark fw-bold px-3">📥 Fetch Latest Scan</button>
+            </div>
+            <div class="form-text text-muted">Tap an unassigned card on your Pi terminal, then click the button above.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary fw-bold px-4 py-2 shadow-sm flex-grow-1">
+                ➕ Register Employee
+            </button>
+            <a href="/employees" class="btn btn-secondary fw-semibold px-4 py-2 shadow-sm">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+document.getElementById('fetch-scan-btn').addEventListener('click', function() {
+    const btn = this;
+    btn.innerText = "🔄 Checking...";
+    btn.disabled = true;
+
+    fetch('/add_employee?get_latest_scan=1')
+        .then(response => response.json())
+        .then(data => {
+            btn.disabled = false;
+            if (data.rfid_uid) {
+                document.getElementById('rfid_uid').value = data.rfid_uid;
+                btn.className = "btn btn-success fw-bold px-3";
+                btn.innerText = "✅ Fetched!";
+                setTimeout(() => {
+                    btn.className = "btn btn-dark fw-bold px-3";
+                    btn.innerText = "📥 Fetch Latest Scan";
+                }, 2500);
+            } else {
+                alert("No recent unassigned scans found. Please tap the card on your hardware reader first!");
+                btn.className = "btn btn-dark fw-bold px-3";
+                btn.innerText = "📥 Fetch Latest Scan";
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            console.error("Scanning Error:", err);
+            btn.innerText = "📥 Fetch Latest Scan";
+        });
+});
+</script>
+{% endblock %}

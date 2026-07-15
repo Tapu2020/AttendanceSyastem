@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Payroll - System Console{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark m-0">📊 Monthly Payroll Directory</h2>
+    <p class="text-secondary small m-0 mt-1">Automated salary sheet proration based directly on logged workforce days present.</p>
+</div>
+
+<div class="card shadow-sm border-0 p-4 mb-4 bg-white" style="border-radius: 8px;">
+    <form method="POST" action="/payroll" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small fw-bold text-secondary">Target Payroll Month Cycle</label>
+            <input type="month" name="month" class="form-control text-dark fw-medium" value="{{ selected_month }}" required>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-dark fw-bold w-100 py-2 shadow-sm">
+                🔄 Load Salary Sheet
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card shadow-sm border-0 bg-white overflow-hidden" style="border-radius: 8px;">
+    <div class="bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <h5 class="m-0 fs-6 fw-bold">Payroll Sheet Statement: {{ selected_month }}</h5>
+        <span class="badge bg-primary px-3 py-1 fw-semibold">Total Cycle Days: {{ total_days }}</span>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light border-bottom">
+                <tr>
+                    <th class="ps-4 py-3 text-secondary small fw-bold">EMP ID</th>
+                    <th class="py-3 text-secondary small fw-bold">EMPLOYEE NAME</th>
+                    <th class="py-3 text-secondary small fw-bold text-center">MONTHLY BASE</th>
+                    <th class="py-3 text-secondary small fw-bold text-center bg-light text-primary">DAYS PRESENT</th>
+                    <th class="py-3 text-secondary small fw-bold text-center text-success">EARNED PRO-RATA</th>
+                    <th class="py-3 text-secondary small fw-bold text-center text-danger">ADVANCES TAKEN</th>
+                    <th class="py-3 text-secondary small fw-bold text-center fw-extrabold text-dark">FINAL TAKE-HOME</th>
+                    <th class="pe-4 py-3 text-end text-secondary small fw-bold">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in payroll_records %}
+                <tr class="border-bottom">
+                    <td class="ps-4 text-muted font-monospace">#EMP-00{{ record.id }}</td>
+                    <td><span class="fw-bold text-dark">{{ record.name }}</span></td>
+                    <td class="text-center text-secondary">₹{{ "{:,.2f}".format(record.base_salary) }}</td>
+                    
+                    <td class="text-center bg-light fw-bold text-primary font-monospace">
+                        {{ record.present_days }} / {{ total_days }} d
+                    </td>
+                    
+                    <td class="text-center text-success fw-semibold font-monospace">
+                        ₹{{ "{:,.2f}".format(record.earned_salary) }}
+                    </td>
+                    
+                    <td class="text-center text-danger font-monospace">
+                        - ₹{{ "{:,.2f}".format(record.total_advance) }}
+                    </td>
+                    
+                    <td class="text-center fw-bold text-dark font-monospace fs-6">
+                        ₹{{ "{:,.2f}".format(record.final_salary) }}
+                    </td>
+                    
+                    <td class="pe-4 text-end">
+                        {% if record.present_days > 0 %}
+                            <a href="/download_payslip/{{ record.id }}/{{ selected_month }}" class="btn btn-outline-dark btn-sm fw-bold px-3 py-1.5 shadow-sm">
+                                📥 Payslip PDF
+                            </a>
+                        {% else %}
+                            <button class="btn btn-light btn-sm text-muted fw-semibold px-3 py-1.5" disabled title="No logs checked for this month cycle.">
+                                ❌ No Logs
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-5">
+                        <div class="fs-3 mb-2">📭</div>
+                        No active worker records found to compile payroll metrics for this month cycle.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

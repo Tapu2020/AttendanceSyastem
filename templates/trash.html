@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}System Trash - System Console{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">🗑️ System Trash Bin</h2>
+    <span class="badge bg-danger px-3 py-2 fs-6 shadow-sm">10-Day Auto-Purge Active</span>
+</div>
+
+<div class="card shadow-sm border-0 bg-white">
+    <div class="card-header bg-dark text-white py-3">
+        <h5 class="card-title mb-0 fs-6 fw-bold">Soft-Deleted Profiles</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Aadhaar</th>
+                        <th>Base Salary</th>
+                        <th>RFID UID</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td class="text-muted">{{ employee[0] }}</td>
+                        <td><strong>{{ employee[1] }}</strong></td>
+                        <td>{{ employee[2] }}</td>
+                        <td>{{ employee[3] }}</td>
+                        <td>₹{{ "{:,.2f}".format(employee[5]|float) }}</td>
+                        <td><code class="text-dark bg-light px-2 py-1 rounded border">{{ employee[9] }}</code></td>
+                        <td class="text-center">
+                            <a href="/restore_employee/{{ employee[0] }}" class="btn btn-success btn-sm fw-bold me-1">
+                                🔄 Restore
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            The trash bin is completely empty.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

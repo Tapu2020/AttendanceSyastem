@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Advance Payments - System Console{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark m-0">💸 Advance Payments Management</h2>
+        <p class="text-secondary small m-0 mt-1">Record and track advance disbursements issued to employees ahead of payroll settlement.</p>
+    </div>
+    <span class="badge bg-dark bg-opacity-10 text-dark border border-dark border-opacity-25 px-3 py-2 fw-bold shadow-sm" style="font-size: 0.85rem;">
+        🔒 Payroll Tracking Mode
+    </span>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 bg-white" style="border-radius: 8px;">
+            <div class="bg-dark text-white p-3 border-0" style="border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <h5 class="m-0 fs-6 fw-bold d-flex align-items-center gap-2">
+                    <span>📝 Record New Advance</span>
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="/advances" method="POST">
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Select Employee</label>
+                        <select class="form-select text-dark fw-medium" name="employee_id" required style="border-radius: 6px; padding: 0.6rem;">
+                            <option value="" selected disabled>Choose active worker...</option>
+                            {% for emp in employees %}
+                                <option value="{{ emp[0] }}">👤 {{ emp[1] }} (ID: {{ emp[0] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Amount Issued</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary fw-bold" style="border-radius: 6px 0 0 6px; padding-left: 0.9rem; padding-right: 0.9rem;">₹</span>
+                            <input type="number" step="0.01" min="1" class="form-control text-dark font-monospace fw-bold" name="amount" placeholder="0.00" required style="border-radius: 0 6px 6px 0; padding: 0.6rem;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Disbursement Date</label>
+                        <input type="date" class="form-control text-dark fw-medium" name="date" required value="{{ current_date }}" style="border-radius: 6px; padding: 0.6rem;">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary">Reason / Office Remarks</label>
+                        <textarea class="form-control text-dark" name="reason" rows="3" placeholder="Optional notes regarding this advance payout..." style="border-radius: 6px; padding: 0.6rem; resize: none;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark fw-bold w-100 py-2.5 shadow-sm d-flex align-items-center justify-content-center gap-2" style="border-radius: 6px;">
+                        <span>💾 Save Advance Payment</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 bg-white overflow-hidden" style="border-radius: 8px;">
+            <div class="bg-dark text-white p-3 d-flex justify-content-between align-items-center" style="border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                <h5 class="m-0 fs-6 fw-bold d-flex align-items-center gap-2">
+                    <span>📊 Advance Payment History Log</span>
+                </h5>
+                <span class="badge bg-white bg-opacity-20 text-black font-monospace px-2.5 py-1 small fw-medium">
+                    Total Logs: {{ advances|length }}
+                </span>
+            </div>
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light border-bottom">
+                            <tr>
+                                <th class="ps-4 py-3 text-secondary small fw-bold" style="width: 12%;">TX ID</th>
+                                <th class="py-3 text-secondary small fw-bold" style="width: 33%;">EMPLOYEE NAME</th>
+                                <th class="py-3 text-secondary small fw-bold text-center" style="width: 20%;">AMOUNT</th>
+                                <th class="py-3 text-secondary small fw-bold text-center" style="width: 15%;">DATE GIVEN</th>
+                                <th class="pe-4 py-3 text-secondary small fw-bold" style="width: 20%;">REASON / NOTES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for adv in advances %}
+                            <tr class="border-bottom">
+                                <td class="ps-4 text-muted font-monospace small">#TX-00{{ adv[0] }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ adv[1] }}</div>
+                                </td>
+                                <td class="text-center font-monospace text-danger fw-bold fs-6">
+                                    ₹{{ "{:,.2f}".format(adv[2]) }}
+                                </td>
+                                <td class="text-center text-secondary font-monospace small fw-medium">
+                                    {{ adv[3] | format_date }}
+                                ]</td>
+                                <td class="pe-4 text-secondary small italic">
+                                    {% if adv[4] %}
+                                        {{ adv[4] }}
+                                    {% else %}
+                                        <span class="text-muted text-opacity-50">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <div class="fs-2 mb-2">📭</div>
+                                    No advance payment histories logged in the active database registry yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}  

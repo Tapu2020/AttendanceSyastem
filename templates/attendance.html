@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Attendance - System Console{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark m-0">🕒 Live Attendance Logs</h2>
+    <p class="text-secondary small m-0 mt-1">Real-time terminal tracking for employee check-ins and check-outs.</p>
+</div>
+
+<div class="card shadow-sm border-0 p-4 mb-4 bg-white" style="border-radius: 8px;">
+    <h5 class="fw-bold text-dark mb-3">✍️ Manual Attendance Override</h5>
+    <form action="/manual_attendance" method="POST" class="row g-3 align-items-end">
+        
+        <div class="col-md-3">
+            <label class="form-label small fw-bold text-secondary">Select Employee</label>
+            <select name="employee_id" class="form-select" required>
+                <option value="" disabled selected>Choose Worker...</option>
+                {% for emp in active_employees %}
+                    <option value="{{ emp[0] }}">{{ emp[1] }} (ID: {{ emp[0] }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary">Target Date</label>
+            <input type="date" name="attendance_date" class="form-control" value="{{ attendance_records[0][2] if attendance_records else '' }}" required>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary">Action Operation</label>
+            <select name="action_type" class="form-select" required>
+                <option value="Check-In" selected>📥 Check-In Entry</option>
+                <option value="Check-Out">📤 Check-Out Entry</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label small fw-bold text-secondary">Timestamp Clock</label>
+            <input type="time" name="manual_time" class="form-control" value="09:00" required>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-dark fw-bold w-100 py-2 shadow-sm">
+                💾 Log Manual Record
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    <div class="bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <h5 class="m-0 fs-6 fw-bold">Live Scan Feed Stream</h5>
+        <span class="badge bg-danger animate-pulse px-2 py-1" id="stream-status">● LIVE STREAMING</span>
+    </div>
+    
+    <div class="table-responsive" id="attendance-table-container">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3 text-secondary small fw-bold">RECORD ID</th>
+                    <th class="py-3 text-secondary small fw-bold">EMPLOYEE NAME</th>
+                    <th class="py-3 text-secondary small fw-bold">DATE</th>
+                    <th class="py-3 text-secondary small fw-bold">CHECK IN</th>
+                    <th class="py-3 text-secondary small fw-bold">CHECK OUT</th>
+                    <th class="py-3 text-secondary small fw-bold">SHIFT STATUS</th>
+                    <th class="pe-4 py-3 text-end text-secondary small fw-bold">TOTAL HOURS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in attendance_records %}
+                <tr class="border-bottom">
+                    <td class="ps-4 text-muted font-monospace">#REC-{{ record[0] }}</td>
+                    <td><span class="fw-bold text-dark">{{ record[1] }}</span></td>
+                    
+                    <td class="text-secondary fw-semibold">{{ record[2] | format_date }}</td>
+                    
+                    <td class="text-success fw-medium font-monospace">{{ record[3] }}</td>
+                    <td class="text-primary fw-medium font-monospace">
+                        {{ record[4] if record[4] is not none else '<span class="text-muted italic small">Active Shift...</span>'|safe }}
+                    </td>
+                    <td>
+                        {% if record[5] == "On Time" %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 fw-semibold">
+                                ✓ On Time
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5 fw-semibold">
+                                ⚠️ Late (+{{ record[7] }} mins)
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 text-end font-monospace text-dark fw-medium">
+                        {{ record[6] if record[6] is not none else '—' }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+                        <div class="fs-3 mb-2">📡</div>
+                        No scan signatures compiled in the network database registries today yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.4; }
+    }
+    .animate-pulse {
+        animation: pulse 2s infinite;
+    }
+</style>
+
+<script>
+    function fetchLatestLogs() {
+        const statusBadge = document.getElementById('stream-status');
+        fetch('/attendance')
+            .then(response => response.text())
+            .then(htmlText => {
+                const parser = new DOMParser();
+                const freshDoc = parser.parseFromString(htmlText, 'text/html');
+                const freshTableHTML = freshDoc.getElementById('attendance-table-container').innerHTML;
+                document.getElementById('attendance-table-container').innerHTML = freshTableHTML;
+                statusBadge.className = "badge bg-danger animate-pulse px-2 py-1";
+                statusBadge.innerText = "● LIVE STREAMING";
+            })
+            .catch(error => {
+                console.error("Auto Refresh Network Issue:", error);
+                statusBadge.className = "badge bg-secondary px-2 py-1";
+                statusBadge.innerText = "⚠️ DISCONNECTED";
+            });
+    }
+    setInterval(fetchLatestLogs, 3000);
+</script>
+{% endblock %}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DEEP ENTERPRISE Console{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-bg: #182b49;       /* Deep Corporate Navy Blue */
+            --accent-hover: #223c66;     /* Secondary Focus State Blue */
+            --light-canvas: #f8fafc;     /* Clean Soft Grey Page Canvas */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-canvas);
+            color: #334155;
+            overflow-x: hidden;
+        }
+
+        /* Fixed Left Navigation Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            background-color: var(--primary-bg);
+            z-index: 100;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column; /* Fixed internal element wrapping */
+            justify-content: space-between;
+        }
+
+        .sidebar-top {
+            width: 100%;
+        }
+
+        /* Modern Logo Branding Header Area */
+        .sidebar-brand {
+            padding: 24px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-menu {
+            padding: 20px 12px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .sidebar-item {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .sidebar-link.active {
+            background-color: #2563eb; 
+            color: #ffffff;
+        }
+
+        /* HIGHLY INTERACTIVE BOTTOM SIDEBAR FOOTER PANEL */
+        .sidebar-footer {
+            padding: 16px 10px; /* Widened internal layout horizontal context space */
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Interactive Admin Badge Styling */
+        .admin-badge-interactive {
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            background-color: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+            width: 100%;
+        }
+        .admin-badge-interactive:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Smooth Interactive Action Button Layout */
+        .btn-signout-interactive {
+            background-color: #dc2626;
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+        }
+
+        /* Beautiful Hover State Micro-Animations */
+        .btn-signout-interactive:hover {
+            background-color: #b91c1c;
+            color: #ffffff;
+            transform: translateY(-1.5px); /* Soft physical pop elevation upward */
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Physical downward depress animation click response */
+        .btn-signout-interactive:active {
+            transform: translateY(0.5px);
+            box-shadow: 0 1px 2px rgba(220, 38, 38, 0.2);
+        }
+
+        /* Top Action Status Navbar */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            height: 70px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+            z-index: 99;
+            padding: 0 30px;
+        }
+
+        /* Main Dynamic Page Layout Viewport Wrapper */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            padding: 100px 30px 40px 30px;
+            min-height: 100vh;
+        }
+
+        /* Standardized Premium Card Panels */
+        .card-custom {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+        }
+
+        /* General Buttons Optimization */
+        .btn {
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar d-flex flex-column justify-content-between">
+        
+        <div class="sidebar-top">
+            <div class="sidebar-brand d-flex flex-column align-items-center text-center">
+                <img src="{{ url_for('static', filename='logo.jpeg') }}" 
+                     alt="DEEP ENTERPRISE Logo" 
+                     class="img-fluid rounded mb-3" 
+                     style="width: 80px; height: 80px; object-fit: contain; background: #ffffff; padding: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.3);">
+                <div class="d-flex flex-column align-items-center">
+                    <span class="fw-bold tracking-wide text-white m-0" style="font-size: 1.25rem; letter-spacing: 0.5px; line-height: 1.2;">DEEP ENTERPRISE</span>
+                    <span class="fw-semibold text-uppercase mt-1" style="font-size: 0.68rem; letter-spacing: 1.5px; color: #94a3b8 !important;">Console Hub</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="/" class="sidebar-link">📊 Dashboard</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/employees" class="sidebar-link">👥 Manage Employees</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/attendance" class="sidebar-link">🕒 Live Attendance</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/attendance_history" class="sidebar-link">📜 Attendance History</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/advances" class="sidebar-link">💰 Advance Payments</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/attendance_summary" class="sidebar-link">📈 Monthly Summaries</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/payroll" class="sidebar-link">💳 Payroll Management</a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/trash" class="sidebar-link">🗑️ Archival Trash</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="d-flex flex-column gap-2" style="width: 100%;">
+                <div class="admin-badge-interactive d-flex align-items-center justify-content-center gap-2 py-2" style="width: 100%; min-width: 0;">
+                    <img src="{{ url_for('static', filename='logo.jpeg') }}" 
+                         alt="Mini Logo" 
+                         class="rounded" 
+                         style="width: 18px; height: 18px; object-fit: contain; background: #ffffff; padding: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1);">
+                    <span style="white-space: nowrap; flex-shrink: 0;">Admin</span>
+                </div>
+                <a href="/logout" class="btn btn-sm btn-signout-interactive w-100 py-2 text-center text-decoration-none">
+                    Sign Out
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="top-navbar d-flex align-items-center">
+        <div class="text-secondary fw-medium fs-6">System Management Infrastructure Console</div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="container-fluid p-0">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

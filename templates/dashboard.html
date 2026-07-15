@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Attendance System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-dark m-0"> System Control Dashboard</h2>
+        <p class="text-secondary small m-0 mt-1">Real-time tracking overview and enterprise infrastructure actions.</p>
+    </div>
+    <span class="badge bg-dark px-3 py-2 fs-6 shadow-sm">Metrics Active</span>
+</div>
+
+<div class="row g-4 mb-5">
+    
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card-custom p-4 d-flex align-items-center justify-content-between h-100 position-relative overflow-hidden" style="border-left: 4px solid #2563eb;">
+            <div>
+                <div class="text-uppercase tracking-wider text-secondary fw-semibold mb-1" style="font-size: 0.75rem;">Total Employees</div>
+                <h3 class="fw-bold text-dark m-0 fs-2">{{ total_employees }}</h3>
+            </div>
+            <div class="fs-1 opacity-25 text-primary">👥</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card-custom p-4 d-flex align-items-center justify-content-between h-100 position-relative overflow-hidden" style="border-left: 4px solid #10b981;">
+            <div>
+                <div class="text-uppercase tracking-wider text-secondary fw-semibold mb-1" style="font-size: 0.75rem;">Present Today</div>
+                <h3 class="fw-bold text-dark m-0 fs-2">{{ present_today }}</h3>
+            </div>
+            <div class="fs-1 opacity-25 text-success">🕒</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card-custom p-4 d-flex align-items-center justify-content-between h-100 position-relative overflow-hidden" style="border-left: 4px solid #f59e0b;">
+            <div>
+                <div class="text-uppercase tracking-wider text-secondary fw-semibold mb-1" style="font-size: 0.75rem;">Advances Given</div>
+                <h3 class="fw-bold text-dark m-0 fs-2">₹{{ "{:,.2f}".format(advances_given) }}</h3>
+            </div>
+            <div class="fs-1 opacity-25 text-warning">💰</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card-custom p-4 d-flex align-items-center justify-content-between h-100 position-relative overflow-hidden" style="border-left: 4px solid #ef4444;">
+            <div>
+                <div class="text-uppercase tracking-wider text-secondary fw-semibold mb-1" style="font-size: 0.75rem;">Net Salary Due</div>
+                <h3 class="fw-bold text-dark m-0 fs-2">₹{{ "{:,.2f}".format(salary_due) }}</h3>
+            </div>
+            <div class="fs-1 opacity-25 text-danger">💳</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-4">
+    
+    <div class="col-12 col-lg-7">
+        <div class="card-custom p-4 h-100">
+            <h5 class="fw-bold text-dark mb-1">⚡ Quick Administration Tasks</h5>
+            <p class="text-secondary small mb-4">Direct operational shortcuts to manage records and update ledger sheets manually.</p>
+            
+            <div class="row g-3">
+                <div class="col-6">
+                    <a href="/add_employee" class="btn btn-outline-primary w-100 py-3 text-start d-flex align-items-center justify-content-between shadow-sm">
+                        <span>👥 Add Employee</span>
+                        <span class="text-muted small">➔</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="/attendance" class="btn btn-outline-success w-100 py-3 text-start d-flex align-items-center justify-content-between shadow-sm">
+                        <span>🕒 Log Attendance</span>
+                        <span class="text-muted small">➔</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="/advances" class="btn btn-outline-warning w-100 py-3 text-start d-flex align-items-center justify-content-between shadow-sm">
+                        <span>💸 Issue Advance</span>
+                        <span class="text-muted small">➔</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="/payroll" class="btn btn-outline-danger w-100 py-3 text-start d-flex align-items-center justify-content-between shadow-sm">
+                        <span>💳 Run Payroll</span>
+                        <span class="text-muted small">➔</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="card-custom p-4 h-100 bg-white">
+            <h5 class="fw-bold text-dark mb-2">📋 System Governance Rules</h5>
+            <p class="text-secondary small mb-3">Core automation parameters actively running in the background console:</p>
+            
+            <div class="small text-secondary lh-lg">
+                <div class="d-flex align-items-start mb-2">
+                    <span class="me-2 text-primary">•</span>
+                    <span><strong>Automated Trash Purge:</strong> Profiles marked for deletion are safely kept in the archive layout for 10 days before absolute data erasure.</span>
+                </div>
+                <div class="d-flex align-items-start mb-2">
+                    <span class="me-2 text-success">•</span>
+                    <span><strong>Live Sync Calculations:</strong> Base payroll rates subtract advanced amounts in real-time to compute outstanding disbursement balances.</span>
+                </div>
+                <div class="d-flex align-items-start">
+                    <span class="me-2 text-danger">•</span>
+                    <span><strong>Secured State:</strong> Admin dashboard queries validation is verified locally to defend ledger data parameters cleanly.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance History - System Console{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark m-0">📜 Archival History Queries</h2>
+    <p class="text-secondary small m-0 mt-1">Query deep system databases to audit workforce records and custom date ranges.</p>
+</div>
+
+<div class="card-custom p-4 mb-4">
+    <h5 class="fw-bold text-dark mb-3 fs-6">Filter Ledger Sheets</h5>
+    <form method="POST" action="/attendance_history" class="row g-3 align-items-end">
+        
+        <div class="col-12 col-md-4">
+            <label class="form-label small fw-semibold text-secondary">Target Employee File</label>
+            <select class="form-select text-dark" name="employee_id">
+                <option value="">-- All Registered Staff --</option>
+                {% for emp in employees %}
+                    <option value="{{ emp[0] }}">{{ emp[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-12 col-md-3">
+            <label class="form-label small fw-semibold text-secondary">From Date</label>
+            <input type="date" class="form-control text-dark" name="from_date">
+        </div>
+        
+        <div class="col-12 col-md-3">
+            <label class="form-label small fw-semibold text-secondary">To Date</label>
+            <input type="date" class="form-control text-dark" name="to_date">
+        </div>
+        
+        <div class="col-12 col-md-2">
+            <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                <span>🔍 Filter</span>
+            </button>
+        </div>
+        
+    </form>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3 text-secondary small fw-bold">ID</th>
+                    <th class="py-3 text-secondary small fw-bold">EMPLOYEE NAME</th>
+                    <th class="py-3 text-secondary small fw-bold">LOG DATE</th>
+                    <th class="py-3 text-secondary small fw-bold">INBOUND TIME</th>
+                    <th class="py-3 text-secondary small fw-bold">OUTBOUND TIME</th>
+                    <th class="pe-4 py-3 text-end text-secondary small fw-bold">DURATION TRACKED</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in records %}
+                <tr class="border-bottom">
+                    <td class="ps-4 text-muted font-monospace">#{{ row[0] }}</td>
+                    <td><span class="fw-bold text-dark">{{ row[1] }}</span></td>
+                    
+                    <td class="text-secondary fw-semibold">{{ row[2] | format_date }}</td>
+                    
+                    <td class="text-success font-monospace">{{ row[3] }}</td>
+                    <td class="text-primary font-monospace">
+                        {{ row[4] if row[4] is not none else '<span class="text-muted small">Missed Out</span>'|safe }}
+                    </td>
+                    <td class="pe-4 text-end font-monospace text-dark fw-medium">
+                        {{ row[5] if row[5] is not none else '—' }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-5">
+                        📭 No matching attendance archival rows located for this query selection.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

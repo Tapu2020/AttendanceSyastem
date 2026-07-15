@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Employees - System Console{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">👥 Manage Employees</h2>
+    <a href="/add_employee" class="btn btn-primary fw-bold shadow-sm">+ Add Employee</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-dark text-white py-3">
+        <h5 class="card-title mb-0 fs-6 fw-bold">Active Employee Records</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover mb-0 align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Aadhaar</th>
+                        <th>Salary</th>
+                        <th>Joining Date</th> <th>Shift Start</th>
+                        <th>Shift End</th>
+                        <th>Grace</th>
+                        <th>RFID UID</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td class="text-muted">{{ employee[0] }}</td>
+                        <td><strong>{{ employee[1] }}</strong></td>
+                        <td>{{ employee[2] }}</td>
+                        <td>{{ employee[3] }}</td>
+                        <td>₹{{ employee[5] }}</td>
+                        <td class="text-secondary fw-semibold">{{ employee[4] | format_date }}</td>
+                        <td>{{ employee[6] }}</td>
+                        <td>{{ employee[7] }}</td>
+                        <td>{{ employee[8] }} min</td>
+                        <td><code class="text-dark bg-light px-2 py-1 rounded border">{{ employee[9] }}</code></td>
+                        <td class="text-center">
+                            <a href="/edit_employee/{{ employee[0] }}" class="btn btn-warning btn-sm me-1 fw-semibold">Edit</a>
+                            <a href="/delete_employee/{{ employee[0] }}" class="btn btn-danger btn-sm fw-semibold" 
+                               onclick="return confirm('Move employee to trash?');">Delete</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-5">
+                            No active employee profiles found in the database.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

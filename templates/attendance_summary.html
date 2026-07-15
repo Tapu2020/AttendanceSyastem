@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Summary - System Console{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark m-0">📊 Monthly Attendance Summary</h2>
+    <p class="text-secondary small m-0 mt-1">Review aggregated monthly tracking metrics and structural penalty logs.</p>
+</div>
+
+<div class="card-custom p-4 mb-4">
+    <h5 class="fw-bold text-dark mb-3 fs-6">Select Summary Target Parameters</h5>
+    <form action="/attendance_summary" method="POST" class="row g-3 align-items-end">
+        <div class="col-12 col-md-4">
+            <label class="form-label small fw-semibold text-secondary">Target Month</label>
+            <input type="month" class="form-control text-dark" name="month" value="{{ selected_month }}" required>
+        </div>
+        <div class="col-12 col-md-3">
+            <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                <span>📈 Generate Report</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    <div class="bg-dark text-white p-3">
+        <h5 class="m-0 fs-6 fw-bold">Aggregated Totals for Ledger Frame: <span class="text-info font-monospace">{{ selected_month }}</span></h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3 text-secondary small fw-bold">EMP ID</th>
+                    <th class="py-3 text-secondary small fw-bold">EMPLOYEE NAME</th>
+                    <th class="py-3 text-secondary small fw-bold">BASE MONTHLY SALARY</th>
+                    <th class="py-3 text-secondary small fw-bold">DAYS PRESENT</th>
+                    <th class="py-3 text-secondary small fw-bold">LATE DAYS COUNT</th>
+                    <th class="pe-4 py-3 text-end text-secondary small fw-bold">TOTAL PENALTY MINUTES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in summary_records %}
+                <tr class="border-bottom">
+                    <td class="ps-4 text-muted font-monospace">#EMP-00{{ record.id }}</td>
+                    <td><span class="fw-bold text-dark">{{ record.name }}</span></td>
+                    <td class="fw-medium text-dark">₹{{ "{:,.2f}".format(record.base_salary|float) }}</td>
+                    <td>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 fw-semibold">
+                            {{ record.present_days }} Days Verified
+                        </span>
+                    </td>
+                    <td>
+                        {% if record.late_days > 0 %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 fw-semibold">
+                                ⚠️ {{ record.late_days }} Late Violations
+                            </span>
+                        {% else %}
+                            <span class="badge bg-light text-muted border px-2.5 py-1.5 fw-medium">
+                                Perfect Attendance
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 text-end font-monospace text-danger fw-bold">
+                        {{ record.total_late_minutes }} mins
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-5">
+                        📭 No active metrics logged or processed for this calculation block.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
